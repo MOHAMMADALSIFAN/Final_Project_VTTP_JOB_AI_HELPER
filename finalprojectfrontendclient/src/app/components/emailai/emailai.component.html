@@ -1,0 +1,67 @@
+<div class="container-fluid email-app-container">
+  <div class="row">
+
+    <div *ngIf="isMobileView" class="toggle-sidebar-container">
+      <button mat-raised-button color="primary" (click)="toggleSidebar()">
+        <mat-icon>{{ showSidebar ? 'close' : 'history' }}</mat-icon>
+        {{ showSidebar ? 'Close History' : 'Show History' }}
+      </button>
+    </div>
+
+    <!-- Email History Sidebar -->
+    <div class="col-lg-3 sidebar-column" [ngClass]="{'d-none': isMobileView && !showSidebar}">
+      <app-email-history (selectHistory)="onSelectHistory($event)"></app-email-history>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-lg-9" [ngClass]="{'d-none': isMobileView && showSidebar, 'col-12': isMobileView && !showSidebar}">
+      <div class="email-generator-container">
+        <div class="content-container">
+          <h1 class="title">Email Reply Generator</h1>
+          
+          <form [formGroup]="emailForm" class="email-form">
+            <mat-form-field appearance="fill" class="full-width">
+              <mat-label>Original Email Content</mat-label>
+              <textarea matInput formControlName="emailContent" rows="6" placeholder="Paste the email you received here..."></textarea>
+              <mat-error *ngIf="emailForm.get('emailContent')?.hasError('required')">Email content is required</mat-error>
+            </mat-form-field>
+            
+            <mat-form-field appearance="fill" class="full-width">
+              <mat-label>Tone</mat-label>
+              <mat-select formControlName="tone">
+                <mat-option *ngFor="let option of toneOptions" [value]="option.value">
+                  {{ option.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            
+            <button 
+              mat-raised-button
+              color="primary"
+              class="full-width generate-btn"
+              [disabled]="emailForm.invalid || loading"
+              (click)="generateReply()">
+              <mat-spinner *ngIf="loading" diameter="24" class="button-spinner"></mat-spinner>
+              <span *ngIf="!loading">Generate Reply</span>
+            </button>
+          </form>
+          
+          <div *ngIf="error" class="error-message">
+            {{ error }}
+          </div>
+          
+          <div *ngIf="generatedReply" class="generated-reply-container">
+            <h2>Generated Reply:</h2>
+            <mat-form-field appearance="fill" class="full-width">
+              <textarea matInput rows="8" [value]="generatedReply" readonly></textarea>
+            </mat-form-field>
+            
+            <button mat-stroked-button color="primary" (click)="copyToClipboard()">
+              <mat-icon>content_copy</mat-icon> Copy to Clipboard
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

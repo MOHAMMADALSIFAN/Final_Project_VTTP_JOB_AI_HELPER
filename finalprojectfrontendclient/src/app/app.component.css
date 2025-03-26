@@ -1,0 +1,53 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: url('/assets/images/background.jpg') no-repeat center center;
+  background-size: cover;
+  background-attachment: fixed;
+  font-family: 'Roboto', sans-serif;
+}
+  
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: transparent;
+  backdrop-filter: none;
+  padding: 2rem 1rem;
+}
+
+.main-content {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Footer styles */
+footer {
+  margin-top: auto;
+  width: 100%;
+}
+
+footer .container {
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* Make sure Angular Material icons align properly */
+::ng-deep .mat-icon {
+  vertical-align: middle;
+}
+
+/* Fix for small screens */
+@media (max-width: 640px) {
+  main {
+    padding: 1rem 0.5rem;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    right: 0;
+    left: auto;
+  }
+}

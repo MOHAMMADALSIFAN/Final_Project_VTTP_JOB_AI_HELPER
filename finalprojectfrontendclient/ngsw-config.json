@@ -1,0 +1,80 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.ico",
+          "/index.html",
+          "/manifest.json",
+          "/*.css",
+          "/*.js"
+        ]
+      }
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/**",
+          "/icons/**",
+          "/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"
+        ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "api-performance",
+      "urls": ["/api/v1/resume/generate"],
+      "cacheConfig": {
+        "strategy": "performance",
+        "maxSize": 100,
+        "maxAge": "1d"
+      }
+    },
+    {
+      "name": "api-freshness",
+      "urls": ["/api/auth/**"],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 20,
+        "maxAge": "1h",
+        "timeout": "10s"
+      }
+    },
+    {
+      "name": "telegram-api-no-cache",
+      "urls": [
+        "/api/telegram/**", 
+        "/api/v1/resume/send-to-telegram"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 0,
+        "maxAge": "0u",
+        "timeout": "30s"
+      }
+    },
+    {
+      "name": "startPage",
+      "urls": ["/"],
+      "cacheConfig": {
+        "maxSize": 1000,
+        "maxAge": "30d",
+        "strategy": "freshness"
+      }
+    }
+  ],
+  "navigationUrls": [
+    "/**",
+    "!/**/*.*",
+    "!/**/*__*",
+    "!/**/*__*/**"
+  ]
+}

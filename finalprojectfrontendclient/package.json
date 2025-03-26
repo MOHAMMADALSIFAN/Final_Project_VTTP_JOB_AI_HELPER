@@ -1,0 +1,49 @@
+{
+  "name": "finalprojectfrontendclient",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^19.1.0",
+    "@angular/cdk": "^19.2.2",
+    "@angular/common": "^19.1.0",
+    "@angular/compiler": "^19.1.0",
+    "@angular/core": "^19.1.0",
+    "@angular/forms": "^19.1.0",
+    "@angular/material": "^19.2.2",
+    "@angular/platform-browser": "^19.1.0",
+    "@angular/platform-browser-dynamic": "^19.1.0",
+    "@angular/pwa": "19.2.3",
+    "@angular/router": "^19.1.0",
+    "@angular/service-worker": "19.2.2",
+    "@ng-bootstrap/ng-bootstrap": "^18.0.0",
+    "@popperjs/core": "^2.11.8",
+    "bootstrap": "^5.3.3",
+    "canvg": "^4.0.3",
+    "finalprojectfrontendclient": "file:",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.0",
+    "postcss": "^8.5.3",
+    "postcss-loader": "^8.1.1",
+    "rxjs": "~7.8.0",
+    "tailwindcss": "^4.0.14",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^19.2.3",
+    "@angular/cli": "^19.2.3",
+    "@angular/compiler-cli": "^19.1.0",
+    "@angular/localize": "^19.1.0",
+    "@tailwindcss/postcss": "^4.0.15",
+    "@types/html2canvas": "^0.5.35",
+    "@types/jasmine": "~5.1.0",
+    "autoprefixer": "^10.4.21",
+    "postcss-safe-parser": "^7.0.1"
+  }
+}

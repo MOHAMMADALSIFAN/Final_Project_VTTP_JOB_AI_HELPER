@@ -1,0 +1,50 @@
+<div class="email-history-container">
+  <h2 class="history-title">Email History</h2>
+  
+  <div class="search-container">
+    <mat-form-field appearance="fill" class="search-field">
+      <mat-label>Search History</mat-label>
+      <input matInput [(ngModel)]="searchTerm" placeholder="Search in emails..." (keyup.enter)="search()">
+      <button mat-icon-button matSuffix (click)="search()">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <div *ngIf="loading" class="loading-spinner">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <div class="history-list">
+    <ng-container *ngIf="emailHistories.length === 0 && !loading">
+      <div class="no-history">
+        No email history found.
+      </div>
+    </ng-container>
+
+    <mat-card *ngFor="let history of emailHistories" class="history-item" (click)="onSelectHistory(history)">
+      <mat-card-content>
+        <div class="history-content">
+          <div class="history-date">
+            {{ getFormattedDate(history.createdAt) }}
+          </div>
+          <div class="history-tone">
+            <mat-chip>{{ history.tone }}</mat-chip>
+          </div>
+          <div class="history-text">
+            {{ getTruncatedContent(history.originalContent) }}
+          </div>
+        </div>
+        <div class="history-actions">
+          <button mat-icon-button color="warn" (click)="deleteHistory(history.id, $event)" aria-label="Delete">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

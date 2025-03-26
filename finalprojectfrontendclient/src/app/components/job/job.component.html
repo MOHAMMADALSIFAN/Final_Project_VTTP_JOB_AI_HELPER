@@ -1,0 +1,99 @@
+<div class="job-search-container">
+  <div class="content-panel">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+      <h1>Job Search</h1>
+      <p>Find job opportunities that match your skills and experience</p>
+    </div>
+    
+    <!-- Search Box -->
+    <form [formGroup]="searchForm" (ngSubmit)="searchJobs()" class="search-form">
+      <div class="search-fields">
+        <mat-form-field appearance="fill" class="search-input">
+          <mat-label>Search for jobs</mat-label>
+          <input matInput formControlName="query" placeholder="Enter job title, skills, or keywords">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+        
+        <mat-form-field appearance="fill" class="location-input">
+          <mat-label>Location (optional)</mat-label>
+          <input matInput formControlName="location" placeholder="City, state, or remote">
+          <mat-icon matSuffix>location_on</mat-icon>
+        </mat-form-field>
+      </div>
+      
+      <button type="submit" mat-raised-button color="primary" [disabled]="loading">
+        <mat-spinner *ngIf="loading" diameter="20" class="button-spinner"></mat-spinner>
+        <span *ngIf="!loading">Search Jobs</span>
+      </button>
+    </form>
+    
+    <!-- Error Message -->
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+    </div>
+    
+    <!-- No Results Found -->
+    <div *ngIf="jobs.length === 0 && searchPerformed && !loading" class="no-results">
+      No jobs found matching your search. Try different keywords or location.
+    </div>
+    
+    <!-- Job Results -->
+    <div *ngIf="jobs.length > 0" class="job-results">
+      <h2>Job Opportunities ({{ jobs.length }})</h2>
+      
+      <mat-card *ngFor="let job of paginatedJobs" class="job-card">
+        <!-- Job Title and Company -->
+        <mat-card-header>
+          <mat-card-title>{{ job.title }}</mat-card-title>
+          <mat-card-subtitle>{{ job.company }}</mat-card-subtitle>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <!-- Job Details Section -->
+          <div class="job-details">
+            <!-- Location -->
+            <p *ngIf="job.location">
+              <strong>📍 Location:</strong> {{ job.location }}
+              <span *ngIf="isRemote(job)" class="remote-badge">Remote</span>
+            </p>
+            
+            <!-- Job Type -->
+            <p *ngIf="getScheduleType(job)">
+              <strong>⏱️ Job Type:</strong> {{ getScheduleType(job) }}
+            </p>
+            
+            <!-- Posted Time -->
+            <p *ngIf="getPostedTime(job)">
+              <strong>📅 Posted:</strong> {{ getPostedTime(job) }}
+            </p>
+            
+            <!-- Job Description -->
+            <div class="job-description">
+              <strong>📝 Description:</strong>
+              <p>{{ job.description }}</p>
+            </div>
+          </div>
+        </mat-card-content>
+        
+        <!-- Apply Button with fixed handling -->
+        <mat-card-actions>
+          <button mat-raised-button color="primary" 
+                  (click)="handleApplyClick($event, job)">
+            Apply Now
+          </button>
+          <a mat-button [href]="job.shareLink" target="_blank" rel="noopener noreferrer">
+            <mat-icon>share</mat-icon> Share
+          </a>
+        </mat-card-actions>
+      </mat-card>
+      
+      <mat-paginator 
+        [length]="jobs.length" 
+        [pageSize]="pageSize" 
+        [pageSizeOptions]="[5, 10, 20]"
+        (page)="onPageChange($event)">
+      </mat-paginator>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,119 @@
+<div class="cover-letter-container">
+  <div class="main-content">
+    <div class="section-header">
+      <h1>AI Cover Letter Generator</h1>
+      <p>Create a tailored cover letter in seconds</p>
+    </div>
+    <div class="content-layout" [class.preview-open]="showPreview">
+      <div class="form-column">
+        <div class="form-container">
+          <form [formGroup]="coverLetterForm" (ngSubmit)="generateCoverLetter()">
+            <mat-card>
+              <mat-card-content>
+                <h3>Enter your job details</h3>
+                <p class="description-text">
+                  Describe the position you're applying for, your relevant skills and experience,
+                  the company details, and any specific aspects you want to highlight in your cover letter.
+                </p>
+                <mat-form-field appearance="fill" class="full-width no-divider">
+                  <mat-label>Job & Your Background Description</mat-label>
+                  <textarea matInput formControlName="userDescription" rows="10"
+                    placeholder="e.g., I'm applying for a Senior Software Developer position at Microsoft. I have 5 years of experience in web development using Angular and Node.js. The job requires expertise in cloud technologies and I've worked with AWS for 3 years..."></textarea>
+                  <mat-hint>Include job title, company, your relevant experience, and skills</mat-hint>
+                  <mat-error *ngIf="coverLetterForm.get('userDescription')?.hasError('required')">
+                    Description is required
+                  </mat-error>
+                  <mat-error *ngIf="coverLetterForm.get('userDescription')?.hasError('minlength')">
+                    Please provide a more detailed description (at least 50 characters)
+                  </mat-error>
+                </mat-form-field>
+
+                <div class="form-actions">
+                  <button mat-raised-button color="primary" type="submit"
+                    [disabled]="coverLetterForm.invalid || generating" class="generate-button">
+                    <mat-spinner *ngIf="generating" diameter="24" class="spinner"></mat-spinner>
+                    <span *ngIf="!generating">Generate Cover Letter</span>
+                  </button>
+                </div>
+
+                <div *ngIf="error" class="error-message">
+                  {{ error }}
+                </div>
+              </mat-card-content>
+            </mat-card>
+            <mat-card class="tips-card">
+              <mat-card-content>
+                <h3>Tips for a Great Cover Letter</h3>
+                <ul class="tips-list">
+                  <li>Be specific about your skills and experience</li>
+                  <li>Explain why you're interested in the company</li>
+                  <li>Highlight achievements related to the job requirements</li>
+                  <li>Keep it concise - one page is ideal</li>
+                  <li>Mention the specific job title you're applying for</li>
+                </ul>
+              </mat-card-content>
+            </mat-card>
+          </form>
+        </div>
+      </div>
+      <div class="preview-column" *ngIf="showPreview && coverLetterData">
+        <div class="preview-actions">
+          <button mat-icon-button color="primary" (click)="togglePreview()" class="close-preview">
+            <mat-icon>close</mat-icon>
+          </button>
+          <div class="spacer"></div>
+          <button mat-stroked-button (click)="copyToClipboard()">
+            <mat-icon>content_copy</mat-icon> Copy
+          </button>
+        </div>
+
+        <div class="preview-container">
+          <div class="preview-document">
+            <div class="sender-info">
+              <div class="sender-name">{{ coverLetterData.senderInfo.fullName }}</div>
+              <div>{{ coverLetterData.senderInfo.email }}</div>
+              <div>{{ coverLetterData.senderInfo.phoneNumber }}</div>
+              <div>{{ coverLetterData.senderInfo.address }}</div>
+            </div>
+            <div class="letter-date">
+              {{ coverLetterData.letterInfo.date }}
+            </div>
+            <div class="recipient-info">
+              <div>{{ coverLetterData.letterInfo.recipientName }}</div>
+              <div>{{ coverLetterData.letterInfo.recipientTitle }}</div>
+              <div>{{ coverLetterData.letterInfo.companyName }}</div>
+              <div>{{ coverLetterData.letterInfo.companyAddress }}</div>
+            </div>
+            <div class="greeting">
+              {{ coverLetterData.greeting }}
+            </div>
+            <div class="paragraph">
+              {{ coverLetterData.openingParagraph }}
+            </div>
+            <div class="paragraph" *ngFor="let para of coverLetterData.bodyParagraphs">
+              {{ para.content }}
+            </div>
+            <div class="paragraph">
+              {{ coverLetterData.valueProposition }}
+            </div>
+            <div class="paragraph">
+              {{ coverLetterData.enthusiasm }}
+            </div>
+            <div class="paragraph">
+              {{ coverLetterData.callToAction }}
+            </div>
+            <div class="closing">
+              {{ coverLetterData.closing }},
+            </div>
+            <div class="signature">
+              {{ coverLetterData.senderInfo.fullName }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button *ngIf="coverLetterData && !showPreview" mat-fab color="primary" class="preview-fab" (click)="togglePreview()">
+    <mat-icon>visibility</mat-icon>
+  </button>
+</div>

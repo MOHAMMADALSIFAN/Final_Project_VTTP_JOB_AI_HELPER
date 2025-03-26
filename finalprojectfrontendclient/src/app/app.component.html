@@ -1,0 +1,24 @@
+<app-offline-indicator></app-offline-indicator>
+<div class="app-container"
+  [ngStyle]="currentBackground === 'none' ? {} : {'background-image': 'url(' + currentBackground + ')'}">
+  <div class="app-container" [ngStyle]="{'background-image': 'url(' + currentBackground + ')'}">
+    <!-- Navbar Component -->
+    <app-navbar></app-navbar>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow">
+      <div class="main-content">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-4 mt-auto" *ngIf="isLoggedIn">
+      <div class="container mx-auto px-4">
+        <div class="text-center text-white text-sm bg-gray-800 bg-opacity-70 py-2 rounded-lg">
+          &copy; {{ currentYear }} Job AI Helper. All rights reserved.
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>

@@ -1,0 +1,60 @@
+<div class="telegram-integration-container">
+  <div class="integration-card">
+    <div class="card-header">
+      <mat-icon>send</mat-icon>
+      <h2>Connect with Telegram</h2>
+    </div>
+
+    <div class="card-content">
+      <p class="description">
+        Scan the QR code below with your phone to connect to our Telegram bot.
+        Once connected, you can receive your generated resumes directly on Telegram.
+      </p>
+
+      <div class="qr-section">
+        <div *ngIf="loading" class="loading-spinner">
+          <mat-spinner diameter="50"></mat-spinner>
+        </div>
+
+        <div *ngIf="!loading && qrCodeImage" class="qr-code">
+          <img [src]="'data:image/png;base64,' + qrCodeImage" alt="Telegram QR Code" />
+        </div>
+
+        <div *ngIf="!loading && error" class="error-message">
+          {{ error }}
+          <button mat-raised-button color="primary" (click)="generateQrCode()">Try Again</button>
+        </div>
+      </div>
+
+      <div class="instructions">
+        <h3>How to connect:</h3>
+        <ol>
+          <li>Open Telegram on your phone</li>
+          <li>Scan this QR code with your phone's camera</li>
+          <li>Or click the button below to open Telegram</li>
+          <li>Send the start command to our bot to complete the connection</li>
+        </ol>
+      </div>
+
+      <div class="action-buttons">
+        <button mat-raised-button color="primary" (click)="openTelegramLink()" [disabled]="!deepLink">
+          <mat-icon>open_in_new</mat-icon>
+          Open in Telegram
+        </button>
+
+        <button mat-raised-button (click)="generateQrCode()" [disabled]="loading">
+          <mat-icon>refresh</mat-icon>
+          Generate New Code
+        </button>
+        <button mat-raised-button color="accent" (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Back to Resume
+        </button>
+        <button mat-raised-button color="accent" (click)="sendTestPdf()">
+          <mat-icon>send</mat-icon>
+          Test Send PDF
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

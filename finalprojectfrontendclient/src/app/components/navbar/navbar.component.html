@@ -1,0 +1,45 @@
+<!-- navbar.component.html -->
+<nav *ngIf="isLoggedIn" class="app-navbar">
+  <div class="navbar-container">
+    <div class="navbar-brand">
+      <a (click)="navigateTo('/dashboard')" class="brand-link">
+        <h1>Job AI Helper</h1>
+      </a>
+    </div>
+    
+    <div class="navbar-links">
+      <a (click)="navigateTo('/resume-builder')" class="nav-link">
+        <mat-icon>description</mat-icon>
+        <span>Resume Builder</span>
+      </a>
+      <a (click)="navigateTo('/email-generator')" class="nav-link">
+        <mat-icon>email</mat-icon>
+        <span>Email Generator</span>
+      </a>
+      <a (click)="navigateTo('/job-search')" class="nav-link">
+        <mat-icon>work</mat-icon>
+        <span>Job Search</span>
+      </a>
+      <a (click)="navigateTo('/cover-letter')" class="nav-link">
+        <mat-icon>article</mat-icon>
+        <span>Cover Letter</span>
+      </a>
+      <a (click)="navigateTo('/telegram')" class="nav-link">
+        <mat-icon>article</mat-icon>
+        <span>Telegram</span>
+      </a>
+    </div>
+    
+    <div class="navbar-profile" ngbDropdown>
+      <button class="profile-button" id="profileDropdown" ngbDropdownToggle>
+        <span class="username">{{ currentUser?.name || 'User' |uppercase}}</span>
+      </button>
+      
+      <div ngbDropdownMenu aria-labelledby="profileDropdown" class="profile-dropdown">
+        <a ngbDropdownItem (click)="logout()">
+          <mat-icon>logout</mat-icon> Logout
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>

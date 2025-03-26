@@ -1,0 +1,564 @@
+<div class="resume-builder-container">
+  <div class="content-container">
+    <h1 class="title">AI Resume Builder</h1>
+
+    <!-- Initial step: User description -->
+    <div *ngIf="initialStep" class="description-container">
+      <mat-card>
+        <mat-card-content>
+          <p class="instruction-text">
+            Describe your professional background, education, skills, and experience in detail.
+            Our AI will generate a resume draft based on your description.
+          </p>
+
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Your Professional Background</mat-label>
+            <textarea matInput [(ngModel)]="userDescription" rows="10"
+              placeholder="E.g., I'm a software developer with 5 years of experience in web development..."></textarea>
+          </mat-form-field>
+
+          <div *ngIf="error" class="error-message">{{ error }}</div>
+
+          <div class="button-container">
+            <button mat-raised-button color="primary" [disabled]="!userDescription.trim() || loading"
+              (click)="generateResumeData()">
+              <mat-spinner *ngIf="loading" diameter="24" class="button-spinner"></mat-spinner>
+              <span *ngIf="!loading">Generate Resume</span>
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Resume form and preview -->
+    <div *ngIf="!initialStep" class="resume-form-container">
+      <div class="action-buttons">
+        <button mat-stroked-button (click)="resetForm()">
+          <mat-icon>arrow_back</mat-icon> Start Over
+        </button>
+        <button mat-raised-button color="primary" (click)="togglePreview()">
+          {{ previewMode ? 'Edit Resume' : 'Preview Resume' }}
+        </button>
+      </div>
+
+      <!-- Resume Form -->
+      <div *ngIf="!previewMode">
+        <form [formGroup]="resumeForm">
+          <mat-accordion multi="true">
+            <!-- Personal Information -->
+            <mat-expansion-panel [expanded]="true">
+              <mat-expansion-panel-header>
+                <mat-panel-title>Personal Information</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <div formGroupName="personalInformation" class="form-grid">
+                <mat-form-field>
+                  <mat-label>Full Name</mat-label>
+                  <input matInput formControlName="fullName" required>
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Location</mat-label>
+                  <input matInput formControlName="location">
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Email</mat-label>
+                  <input matInput formControlName="email" type="email">
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Phone Number</mat-label>
+                  <input matInput formControlName="phoneNumber">
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>GitHub Profile</mat-label>
+                  <input matInput formControlName="gitHub">
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>LinkedIn Profile</mat-label>
+                  <input matInput formControlName="linkedIn">
+                </mat-form-field>
+              </div>
+            </mat-expansion-panel>
+
+            <!-- Summary -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Professional Summary</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <mat-form-field class="full-width">
+                <mat-label>Summary</mat-label>
+                <textarea matInput formControlName="summary" rows="4" required></textarea>
+              </mat-form-field>
+            </mat-expansion-panel>
+
+            <!-- Skills -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Skills</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <div formArrayName="skills">
+                <div *ngFor="let skill of skillsArray.controls; let i = index" class="array-item">
+                  <div [formGroupName]="i" class="form-grid">
+                    <mat-form-field>
+                      <mat-label>Skill</mat-label>
+                      <input matInput formControlName="title" required>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                      <mat-label>Level</mat-label>
+                      <mat-select formControlName="level" required>
+                        <mat-option *ngFor="let level of skillLevels" [value]="level">
+                          {{ level }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+
+                    <button mat-icon-button color="warn" (click)="removeItem(skillsArray, i)"
+                      *ngIf="skillsArray.length > 1">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <button mat-stroked-button (click)="addSkill()" type="button">
+                  <mat-icon>add</mat-icon> Add Skill
+                </button>
+              </div>
+            </mat-expansion-panel>
+
+            <!-- Experience -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Experience</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <div formArrayName="experience">
+                <div *ngFor="let exp of experienceArray.controls; let i = index" class="array-item">
+                  <div [formGroupName]="i">
+                    <div class="form-grid">
+                      <mat-form-field>
+                        <mat-label>Job Title</mat-label>
+                        <input matInput formControlName="jobTitle" required>
+                      </mat-form-field>
+
+                      <mat-form-field>
+                        <mat-label>Company</mat-label>
+                        <input matInput formControlName="company" required>
+                      </mat-form-field>
+
+                      <mat-form-field>
+                        <mat-label>Location</mat-label>
+                        <input matInput formControlName="location">
+                      </mat-form-field>
+
+                      <mat-form-field>
+                        <mat-label>Duration</mat-label>
+                        <input matInput formControlName="duration">
+                      </mat-form-field>
+                    </div>
+
+                    <mat-form-field class="full-width">
+                      <mat-label>Responsibilities</mat-label>
+                      <textarea matInput formControlName="responsibility" rows="3"></textarea>
+                    </mat-form-field>
+
+                    <div class="action-row">
+                      <button mat-icon-button color="warn" (click)="removeItem(experienceArray, i)"
+                        *ngIf="experienceArray.length > 1">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <button mat-stroked-button (click)="addExperience()" type="button">
+                  <mat-icon>add</mat-icon> Add Experience
+                </button>
+              </div>
+            </mat-expansion-panel>
+
+            <!-- Education -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Education</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <div formArrayName="education">
+                <div *ngFor="let edu of educationArray.controls; let i = index" class="array-item">
+                  <div [formGroupName]="i" class="form-grid">
+                    <mat-form-field>
+                      <mat-label>Degree</mat-label>
+                      <input matInput formControlName="degree" required>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                      <mat-label>University</mat-label>
+                      <input matInput formControlName="university" required>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                      <mat-label>Location</mat-label>
+                      <input matInput formControlName="location">
+                    </mat-form-field>
+
+                    <mat-form-field>
+                      <mat-label>Graduation Year</mat-label>
+                      <input matInput formControlName="graduationYear">
+                    </mat-form-field>
+
+                    <button mat-icon-button color="warn" (click)="removeItem(educationArray, i)"
+                      *ngIf="educationArray.length > 1">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <button mat-stroked-button (click)="addEducation()" type="button">
+                  <mat-icon>add</mat-icon> Add Education
+                </button>
+              </div>
+            </mat-expansion-panel>
+
+            <!-- Certifications -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Certifications</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <div formArrayName="certifications">
+                <div *ngFor="let cert of certificationsArray.controls; let i = index" class="array-item">
+                  <div [formGroupName]="i" class="form-grid">
+                    <mat-form-field>
+                      <mat-label>Certification Title</mat-label>
+                      <input matInput formControlName="title" required>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                      <mat-label>Issuing Organization</mat-label>
+                      <input matInput formControlName="issuingOrganization">
+                    </mat-form-field>
+
+                    <mat-form-field>
+                      <mat-label>Year</mat-label>
+                      <input matInput formControlName="year">
+                    </mat-form-field>
+
+                    <button mat-icon-button color="warn" (click)="removeItem(certificationsArray, i)"
+                      *ngIf="certificationsArray.length > 1">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <button mat-stroked-button (click)="addCertification()" type="button">
+                  <mat-icon>add</mat-icon> Add Certification
+                </button>
+              </div>
+            </mat-expansion-panel>
+
+            <!-- Projects -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Projects</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <div formArrayName="projects">
+                <div *ngFor="let proj of projectsArray.controls; let i = index" class="array-item">
+                  <div [formGroupName]="i">
+                    <div class="form-grid">
+                      <mat-form-field>
+                        <mat-label>Project Title</mat-label>
+                        <input matInput formControlName="title" required>
+                      </mat-form-field>
+
+                      <mat-form-field>
+                        <mat-label>GitHub Link</mat-label>
+                        <input matInput formControlName="githubLink">
+                      </mat-form-field>
+                    </div>
+
+                    <mat-form-field class="full-width">
+                      <mat-label>Description</mat-label>
+                      <textarea matInput formControlName="description" rows="3"></textarea>
+                    </mat-form-field>
+
+
+                    <mat-form-field class="full-width">
+                      <mat-label>Technologies Used (comma separated)</mat-label>
+                      <input matInput [value]="getTechnologiesString(proj)" (blur)="updateTechnologies(proj, $event)">
+                    </mat-form-field>
+
+                    <div class="action-row">
+                      <button mat-icon-button color="warn" (click)="removeItem(projectsArray, i)"
+                        *ngIf="projectsArray.length > 1">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <button mat-stroked-button (click)="addProject()" type="button">
+                  <mat-icon>add</mat-icon> Add Project
+                </button>
+              </div>
+            </mat-expansion-panel>
+
+            <!-- Achievements -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Achievements</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <div formArrayName="achievements">
+                <div *ngFor="let ach of achievementsArray.controls; let i = index" class="array-item">
+                  <div [formGroupName]="i">
+                    <div class="form-grid">
+                      <mat-form-field>
+                        <mat-label>Achievement Title</mat-label>
+                        <input matInput formControlName="title" required>
+                      </mat-form-field>
+
+                      <mat-form-field>
+                        <mat-label>Year</mat-label>
+                        <input matInput formControlName="year">
+                      </mat-form-field>
+                    </div>
+
+                    <mat-form-field class="full-width">
+                      <mat-label>Additional Information</mat-label>
+                      <textarea matInput formControlName="extraInformation" rows="2"></textarea>
+                    </mat-form-field>
+
+                    <div class="action-row">
+                      <button mat-icon-button color="warn" (click)="removeItem(achievementsArray, i)"
+                        *ngIf="achievementsArray.length > 1">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <button mat-stroked-button (click)="addAchievement()" type="button">
+                  <mat-icon>add</mat-icon> Add Achievement
+                </button>
+              </div>
+            </mat-expansion-panel>
+
+            <!-- Languages -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Languages</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <div formArrayName="languages">
+                <div *ngFor="let lang of languagesArray.controls; let i = index" class="array-item">
+                  <div [formGroupName]="i" class="form-row">
+                    <mat-form-field>
+                      <mat-label>Language</mat-label>
+                      <input matInput formControlName="name" required>
+                    </mat-form-field>
+
+                    <button mat-icon-button color="warn" (click)="removeItem(languagesArray, i)"
+                      *ngIf="languagesArray.length > 1">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <button mat-stroked-button (click)="addLanguage()" type="button">
+                  <mat-icon>add</mat-icon> Add Language
+                </button>
+              </div>
+            </mat-expansion-panel>
+
+            <!-- Interests -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Interests</mat-panel-title>
+              </mat-expansion-panel-header>
+
+              <div formArrayName="interests">
+                <div *ngFor="let interest of interestsArray.controls; let i = index" class="array-item">
+                  <div [formGroupName]="i" class="form-row">
+                    <mat-form-field>
+                      <mat-label>Interest</mat-label>
+                      <input matInput formControlName="name" required>
+                    </mat-form-field>
+
+                    <button mat-icon-button color="warn" (click)="removeItem(interestsArray, i)"
+                      *ngIf="interestsArray.length > 1">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <button mat-stroked-button (click)="addInterest()" type="button">
+                  <mat-icon>add</mat-icon> Add Interest
+                </button>
+              </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+
+          <div *ngIf="error" class="error-message">{{ error }}</div>
+
+          <div class="form-actions">
+            <button mat-raised-button color="primary" (click)="togglePreview()">
+              Preview Resume
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Resume Preview -->
+      <div *ngIf="previewMode" class="resume-preview" #resumeContent>
+        <div class="resume-document">
+          <!-- Header Section -->
+          <div class="resume-header">
+            <h1 class="resume-name">{{ resumeForm.get('personalInformation.fullName')?.value }}</h1>
+            <p class="resume-location">{{ resumeForm.get('personalInformation.location')?.value }}</p>
+
+            <div class="resume-contact">
+              <span *ngIf="resumeForm.get('personalInformation.email')?.value">
+                <mat-icon>email</mat-icon> {{ resumeForm.get('personalInformation.email')?.value }}
+              </span>
+              <span *ngIf="resumeForm.get('personalInformation.phoneNumber')?.value">
+                <mat-icon>phone</mat-icon> {{ resumeForm.get('personalInformation.phoneNumber')?.value }}
+              </span>
+            </div>
+
+            <div class="resume-links">
+              <a *ngIf="resumeForm.get('personalInformation.gitHub')?.value"
+                [href]="resumeForm.get('personalInformation.gitHub')?.value" target="_blank">
+              </a>
+              <a *ngIf="resumeForm.get('personalInformation.linkedIn')?.value"
+                [href]="resumeForm.get('personalInformation.linkedIn')?.value" target="_blank">
+              </a>
+            </div>
+          </div>
+
+          <!-- Summary Section -->
+          <div class="resume-section">
+            <h2>Summary</h2>
+            <p>{{ resumeForm.get('summary')?.value }}</p>
+          </div>
+
+          <!-- Skills Section -->
+          <div class="resume-section" *ngIf="skillsArray.length">
+            <h2>Skills</h2>
+            <div class="skills-grid">
+              <div class="skill-item" *ngFor="let skill of skillsArray.controls">
+                {{ skill.get('title')?.value }} - {{ skill.get('level')?.value }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Experience Section -->
+          <div class="resume-section" *ngIf="experienceArray.length">
+            <h2>Experience</h2>
+            <div class="experience-item" *ngFor="let exp of experienceArray.controls">
+              <h3>{{ exp.get('jobTitle')?.value }}</h3>
+              <p class="company-info">
+                {{ exp.get('company')?.value }} | {{ exp.get('location')?.value }}
+              </p>
+              <p class="duration">{{ exp.get('duration')?.value }}</p>
+              <p class="responsibility">{{ exp.get('responsibility')?.value }}</p>
+            </div>
+          </div>
+
+          <!-- Education Section -->
+          <div class="resume-section" *ngIf="educationArray.length">
+            <h2>Education</h2>
+            <div class="education-item" *ngFor="let edu of educationArray.controls">
+              <h3>{{ edu.get('degree')?.value }}</h3>
+              <p>{{ edu.get('university')?.value }}, {{ edu.get('location')?.value }}</p>
+              <p *ngIf="edu.get('graduationYear')?.value">Graduation Year: {{ edu.get('graduationYear')?.value }}</p>
+            </div>
+          </div>
+
+          <!-- Certifications Section -->
+          <div class="resume-section" *ngIf="certificationsArray.length">
+            <h2>Certifications</h2>
+            <div class="certification-item" *ngFor="let cert of certificationsArray.controls">
+              <h3>{{ cert.get('title')?.value }}</h3>
+              <p>{{ cert.get('issuingOrganization')?.value }} - {{ cert.get('year')?.value }}</p>
+            </div>
+          </div>
+
+          <!-- Projects Section -->
+          <div class="resume-section" *ngIf="projectsArray.length">
+            <h2>Projects</h2>
+            <div class="project-item" *ngFor="let proj of projectsArray.controls">
+              <h3>{{ proj.get('title')?.value }}</h3>
+              <p class="project-description">{{ proj.get('description')?.value }}</p>
+              <p *ngIf="proj.get('technologiesUsed')?.value?.length">
+                Technologies: {{ proj.get('technologiesUsed')?.value.join(', ') }}
+              </p>
+              <a *ngIf="proj.get('githubLink')?.value" [href]="proj.get('githubLink')?.value" target="_blank">
+                GitHub Link
+              </a>
+            </div>
+          </div>
+
+          <!-- Achievements Section -->
+          <div class="resume-section" *ngIf="achievementsArray.length">
+            <h2>Achievements</h2>
+            <div class="achievement-item" *ngFor="let ach of achievementsArray.controls">
+              <h3>{{ ach.get('title')?.value }}</h3>
+              <p *ngIf="ach.get('year')?.value">{{ ach.get('year')?.value }}</p>
+              <p>{{ ach.get('extraInformation')?.value }}</p>
+            </div>
+          </div>
+
+          <!-- Languages Section -->
+          <div class="resume-section" *ngIf="languagesArray.length">
+            <h2>Languages</h2>
+            <ul class="language-list">
+              <li *ngFor="let lang of languagesArray.controls">
+                {{ lang.get('name')?.value }}
+              </li>
+            </ul>
+          </div>
+
+          <!-- Interests Section -->
+          <div class="resume-section" *ngIf="interestsArray.length">
+            <h2>Interests</h2>
+            <ul class="interest-list">
+              <li *ngFor="let interest of interestsArray.controls">
+                {{ interest.get('name')?.value }}
+              </li>
+            </ul>
+          </div>
+        </div>
+
+
+            <div class="preview-actions">
+              <button mat-stroked-button (click)="togglePreview()">
+                <mat-icon>edit</mat-icon> Edit Resume
+              </button>
+              
+              <div class="telegram-option">
+                <mat-checkbox [(ngModel)]="sendToTelegram" >
+                  Send to Telegram
+                </mat-checkbox>
+                
+                <div *ngIf="!telegramConnected" class="telegram-notice">
+                  <p>Want to receive your resume on Telegram? <a routerLink="/telegram">Connect your account</a></p>
+                </div>
+              </div>
+              
+          <button mat-raised-button color="primary" (click)="downloadPdf()" [disabled]="loading">
+            <mat-spinner *ngIf="loading" diameter="20" class="button-spinner"></mat-spinner>
+            <mat-icon *ngIf="!loading">download</mat-icon>
+            <span *ngIf="!loading">Download PDF</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

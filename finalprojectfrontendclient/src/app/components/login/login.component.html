@@ -1,0 +1,50 @@
+<div class="login-container">
+  <h2>Welcome Back</h2>
+  <p>Please sign in to your account</p>
+  
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <div>
+      <input type="email" formControlName="email" placeholder="Email address" required>
+      <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.hasError('required')" 
+           class="error-message">
+        Email is required
+      </div>
+      <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.hasError('email')" 
+           class="error-message">
+        Please enter a valid email address
+      </div>
+    </div>
+    
+    <div style="position: relative;">
+      <input [type]="hidePassword ? 'password' : 'text'" formControlName="password" placeholder="Password" required>
+      <span class="password-toggle" (click)="hidePassword = !hidePassword">
+        <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+      </span>
+      <div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.hasError('required')" 
+           class="error-message">
+        Password is required
+      </div>
+    </div>
+
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+
+    <button type="submit" class="login-btn" [disabled]="isLoading">
+      <mat-spinner *ngIf="isLoading" diameter="24" color="accent"></mat-spinner>
+      <span *ngIf="!isLoading">Sign in</span>
+    </button>
+  </form>
+  
+  <div style="text-align: center; margin-top: 20px;">
+    <p>Or continue with</p>
+    <button type="button" (click)="loginWithGoogle()" class="social-button">
+      <img src="https://53.fs1.hubspotusercontent-na1.net/hubfs/53/image8-2.jpg" alt="Google logo">
+      <span>Sign in with Google</span>
+    </button>
+  </div>
+
+  <div style="text-align: center; margin-top: 20px;">
+    <p>Don't have an account? <a (click)="navigateToSignup()" class="signup-link">Sign up</a></p>
+  </div>
+</div>
